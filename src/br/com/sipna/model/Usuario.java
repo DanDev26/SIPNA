@@ -11,7 +11,15 @@ public class Usuario {
         this.perfil = perfil;
     }
 
-    public String getUsername() { return username; }
-    public String getPassword() { return password; }
-    public Perfil getPerfil() { return perfil; }
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public Perfil getPerfil() {
+        return perfil;
+    }
 }

@@ -2,22 +2,18 @@ package br.com.sipna.view;
 
 import br.com.sipna.controller.LoginController;
 import br.com.sipna.model.Usuario;
-import br.com.sipna.model.Perfil;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
 public class LoginView extends JFrame {
-    private JTextField txtUsuario;
-    private JPasswordField txtSenha;
-    private JLabel lblMensagem;
-    private LoginController loginController = new LoginController();
-
-    private final Color PRIMARY_BLUE = new Color(30, 144, 255);
-    private final Color TEXT_WHITE = Color.WHITE;
-    private final Color BACKGROUND_WHITE = Color.WHITE;
-    private final Color MESSAGE_RED = new Color(220, 20, 60);
+    private final LoginController controller = new LoginController();
+    private JTextField txtUsername;
+    private JPasswordField txtPassword;
 
     public LoginView() {
         setTitle("SIPNA - Login");
@@ -28,9 +24,8 @@ public class LoginView extends JFrame {
 
         JPanel mainPanel = new JPanel(new GridLayout(1, 2));
 
-        // --- Lado Esquerdo (Azul - Login) ---
         JPanel leftPanel = new JPanel(new GridBagLayout());
-        leftPanel.setBackground(PRIMARY_BLUE);
+        leftPanel.setBackground(new Color(59, 89, 182)); // Azul
         leftPanel.setBorder(new EmptyBorder(50, 50, 50, 50));
 
         GridBagConstraints gbcLeft = new GridBagConstraints();
@@ -40,101 +35,96 @@ public class LoginView extends JFrame {
         
         JLabel lblLogo = new JLabel("SIPNA", SwingConstants.CENTER);
         lblLogo.setFont(new Font("Arial", Font.BOLD, 36));
-        lblLogo.setForeground(TEXT_WHITE);
+        lblLogo.setForeground(Color.WHITE);
         gbcLeft.gridy = 0;
         leftPanel.add(lblLogo, gbcLeft);
 
         gbcLeft.insets = new Insets(20, 0, 5, 0);
-        JLabel lblUsuario = new JLabel("Usuário", SwingConstants.LEFT);
-        lblUsuario.setFont(new Font("Arial", Font.PLAIN, 14));
-        lblUsuario.setForeground(TEXT_WHITE);
+        JLabel lblUsername = new JLabel("Usuário:", SwingConstants.LEFT);
+        lblUsername.setFont(new Font("Arial", Font.PLAIN, 14));
+        lblUsername.setForeground(Color.WHITE);
         gbcLeft.gridy = 1;
-        leftPanel.add(lblUsuario, gbcLeft);
+        leftPanel.add(lblUsername, gbcLeft);
 
-        txtUsuario = new JTextField(15);
-        txtUsuario.setBackground(PRIMARY_BLUE);
-        txtUsuario.setForeground(TEXT_WHITE);
-        txtUsuario.setCaretColor(TEXT_WHITE);
-        txtUsuario.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, TEXT_WHITE));
-        txtUsuario.setFont(new Font("Arial", Font.PLAIN, 16));
+        txtUsername = new JTextField(15);
+        txtUsername.setBackground(new Color(59, 89, 182));
+        txtUsername.setForeground(Color.WHITE);
+        txtUsername.setCaretColor(Color.WHITE);
+        txtUsername.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.WHITE));
+        txtUsername.setFont(new Font("Arial", Font.PLAIN, 16));
         gbcLeft.gridy = 2;
-        leftPanel.add(txtUsuario, gbcLeft);
+        leftPanel.add(txtUsername, gbcLeft);
 
         gbcLeft.insets = new Insets(15, 0, 5, 0);
-        JLabel lblSenha = new JLabel("Senha", SwingConstants.LEFT);
-        lblSenha.setFont(new Font("Arial", Font.PLAIN, 14));
-        lblSenha.setForeground(TEXT_WHITE);
+        JLabel lblPassword = new JLabel("Senha:", SwingConstants.LEFT);
+        lblPassword.setFont(new Font("Arial", Font.PLAIN, 14));
+        lblPassword.setForeground(Color.WHITE);
         gbcLeft.gridy = 3;
-        leftPanel.add(lblSenha, gbcLeft);
+        leftPanel.add(lblPassword, gbcLeft);
 
-        txtSenha = new JPasswordField(15);
-        txtSenha.setBackground(PRIMARY_BLUE);
-        txtSenha.setForeground(TEXT_WHITE);
-        txtSenha.setCaretColor(TEXT_WHITE);
-        txtSenha.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, TEXT_WHITE));
-        txtSenha.setFont(new Font("Arial", Font.PLAIN, 16));
+        txtPassword = new JPasswordField(15);
+        txtPassword.setBackground(new Color(59, 89, 182));
+        txtPassword.setForeground(Color.WHITE);
+        txtPassword.setCaretColor(Color.WHITE);
+        txtPassword.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.WHITE));
+        txtPassword.setFont(new Font("Arial", Font.PLAIN, 16));
         gbcLeft.gridy = 4;
-        leftPanel.add(txtSenha, gbcLeft);
+        leftPanel.add(txtPassword, gbcLeft);
 
         gbcLeft.insets = new Insets(30, 0, 10, 0);
-        JButton btnEntrar = new JButton("Iniciar sessão");
-        btnEntrar.setFont(new Font("Arial", Font.BOLD, 16));
-        btnEntrar.setBackground(new Color(25, 118, 210));
-        btnEntrar.setForeground(TEXT_WHITE);
-        btnEntrar.setBorderPainted(false);
-        btnEntrar.setFocusPainted(false);
-        btnEntrar.setPreferredSize(new Dimension(txtUsuario.getPreferredSize().width, 40));
+        JButton btnLogin = new JButton("Login");
+        btnLogin.setFont(new Font("Arial", Font.BOLD, 16));
+        btnLogin.setForeground(Color.WHITE);
+        btnLogin.setBackground(new Color(59, 89, 182));
+        btnLogin.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+        btnLogin.setFocusPainted(false);
+        gbcLeft.gridx = 0;
         gbcLeft.gridy = 5;
-        leftPanel.add(btnEntrar, gbcLeft);
+        gbcLeft.gridwidth = 2;
+        leftPanel.add(btnLogin, gbcLeft);
 
-        lblMensagem = new JLabel("", SwingConstants.CENTER);
-        lblMensagem.setFont(new Font("Arial", Font.BOLD, 12));
-        lblMensagem.setForeground(MESSAGE_RED);
-        gbcLeft.gridy = 6;
-        leftPanel.add(lblMensagem, gbcLeft);
+        btnLogin.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String username = txtUsername.getText();
+                String password = new String(txtPassword.getPassword());
+                
+                Usuario user = controller.autenticar(username, password);
 
-        btnEntrar.addActionListener(e -> autenticar());
-        txtSenha.addActionListener(e -> autenticar());
+                if (user != null) {
+                    abrirTelaPorPerfil(user);
+                    dispose(); 
+                } else {
+                    JOptionPane.showMessageDialog(null, "Usuário ou senha inválidos.", "Erro de Autenticação", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
 
-        // --- Lado Direito (Branco - Logo "S") ---
         JPanel rightPanel = new JPanel(new GridBagLayout());
-        rightPanel.setBackground(BACKGROUND_WHITE);
-
+        rightPanel.setBackground(new Color(240, 240, 240));
+        
         JLabel lblBigS = new JLabel("S", SwingConstants.CENTER);
         lblBigS.setFont(new Font("Arial", Font.BOLD, 150));
-        lblBigS.setForeground(PRIMARY_BLUE);
+        lblBigS.setForeground(new Color(59, 89, 182));
         rightPanel.add(lblBigS);
-
+        
         mainPanel.add(leftPanel);
         mainPanel.add(rightPanel);
 
         add(mainPanel);
     }
-
-    private void autenticar() {
-        String usuario = txtUsuario.getText().trim();
-        String senha = new String(txtSenha.getPassword());
-
-        Usuario user = loginController.autenticar(usuario, senha);
-        if (user != null) {
-            abrirTelaPorPerfil(user.getPerfil());
-            this.dispose();
-        } else {
-            lblMensagem.setText("Usuário ou senha inválidos!");
-        }
-    }
-
-    private void abrirTelaPorPerfil(Perfil perfil) {
+    
+    private void abrirTelaPorPerfil(Usuario user) {
         SwingUtilities.invokeLater(() -> {
-            switch (perfil) {
+            switch (user.getPerfil()) {
                 case ADMIN:
                     new AdminView().setVisible(true);
                     break;
                 case PROFESSOR:
-                    new ProfessorView().setVisible(true);
+                    new ProfessorView(user.getUsername()).setVisible(true);
                     break;
                 case ALUNO:
-                    new AlunoView().setVisible(true);
+                    new AlunoView(user.getUsername()).setVisible(true);
                     break;
                 case SECRETARIO:
                     new SecretarioView().setVisible(true);

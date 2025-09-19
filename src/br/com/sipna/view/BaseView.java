@@ -3,119 +3,112 @@ package br.com.sipna.view;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class BaseView extends JFrame {
 
-    protected final Color PRIMARY_BLUE = new Color(30, 144, 255);
-    protected final Color DARK_BLUE = new Color(25, 118, 210);
-    protected final Color LIGHT_GRAY = new Color(245, 245, 245);
-    protected final Color TEXT_WHITE = Color.WHITE;
-    protected final Color BACKGROUND_WHITE = Color.WHITE; // <-- Linha adicionada
-
+    protected static final Color PRIMARY_BLUE = new Color(59, 89, 182);
+    protected static final Color BACKGROUND_WHITE = new Color(240, 240, 240);
     protected JPanel mainContentPanel;
-    protected JSplitPane splitPane;
+    protected JPanel sidebarPanel;
 
-    public BaseView(String title, String menuTitle, String mainPanelTitle, String[] menuItems) {
-        setTitle("SIPNA - " + title);
-        setSize(1000, 650);
+    private String windowTitle;
+    private String menuTitle;
+    private String contentTitle;
+    private String[] menuItems;
+    private List<JButton> menuButtons = new ArrayList<>();
+
+    public BaseView(String windowTitle, String menuTitle, String contentTitle, String[] menuItems) {
+        this.windowTitle = windowTitle;
+        this.menuTitle = menuTitle;
+        this.contentTitle = contentTitle;
+        this.menuItems = menuItems;
+
+        initializeUI();
+    }
+    
+    private void initializeUI() {
+        setTitle(windowTitle);
+        setSize(1000, 600);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-        JPanel leftMenu = createLeftMenu(menuTitle, menuItems);
+        setLayout(new BorderLayout());
+
+        createSidebar();
+        createMainContentPanel();
         
-        mainContentPanel = createMainContentPanel(mainPanelTitle);
-        
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftMenu, mainContentPanel);
-        splitPane.setDividerSize(0);
-        splitPane.setDividerLocation(250);
-        
-        add(splitPane);
+        showDashboard();
     }
 
-    private JPanel createLeftMenu(String title, String[] menuItems) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBackground(DARK_BLUE);
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 15, 20, 15));
+    private void createSidebar() {
+        sidebarPanel = new JPanel();
+        sidebarPanel.setBackground(PRIMARY_BLUE);
+        sidebarPanel.setLayout(new BorderLayout());
+        sidebarPanel.setPreferredSize(new Dimension(250, getHeight()));
 
-        JLabel lblTitle = new JLabel("SIPNA");
-        lblTitle.setFont(new Font("Arial", Font.BOLD, 28));
-        lblTitle.setForeground(TEXT_WHITE);
-        lblTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
-        panel.add(lblTitle);
-        panel.add(Box.createVerticalStrut(5));
-        
-        JLabel lblSubTitle = new JLabel(title);
-        lblSubTitle.setFont(new Font("Arial", Font.PLAIN, 14));
-        lblSubTitle.setForeground(new Color(220, 220, 220));
-        lblSubTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
-        panel.add(lblSubTitle);
-        
-        panel.add(Box.createVerticalStrut(30));
+        JPanel menuHeaderPanel = new JPanel();
+        menuHeaderPanel.setBackground(PRIMARY_BLUE);
+        JLabel menuTitleLabel = new JLabel(menuTitle, SwingConstants.CENTER);
+        menuTitleLabel.setForeground(Color.WHITE);
+        menuTitleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        menuHeaderPanel.add(menuTitleLabel);
+        sidebarPanel.add(menuHeaderPanel, BorderLayout.NORTH);
 
+        JPanel menuItemsPanel = new JPanel();
+        menuItemsPanel.setLayout(new BoxLayout(menuItemsPanel, BoxLayout.Y_AXIS));
+        menuItemsPanel.setBackground(PRIMARY_BLUE);
+        menuItemsPanel.setBorder(new EmptyBorder(20, 10, 10, 10));
+        
         for (String item : menuItems) {
-            JButton button = createMenuItemButton(item);
-            panel.add(button);
-            panel.add(Box.createVerticalStrut(10));
+            JButton button = new JButton(item);
+            button.setFont(new Font("Arial", Font.BOLD, 14));
+            button.setForeground(Color.WHITE);
+            button.setBackground(PRIMARY_BLUE);
+            button.setBorderPainted(false);
+            button.setFocusPainted(false);
+            button.setAlignmentX(Component.CENTER_ALIGNMENT);
+            button.setMaximumSize(new Dimension(Integer.MAX_VALUE, button.getPreferredSize().height));
+            menuItemsPanel.add(button);
+            menuItemsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            menuButtons.add(button);
         }
-
-        panel.add(Box.createVerticalGlue());
-
-        return panel;
+        
+        sidebarPanel.add(menuItemsPanel, BorderLayout.CENTER);
+        
+        add(sidebarPanel, BorderLayout.WEST);
     }
 
-    private JButton createMenuItemButton(String text) {
-        JButton button = new JButton(text);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
-        button.setForeground(TEXT_WHITE);
-        button.setBackground(DARK_BLUE);
-        button.setBorderPainted(false);
-        button.setFocusPainted(false);
-        button.setContentAreaFilled(false);
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setAlignmentX(Component.LEFT_ALIGNMENT);
-        button.setHorizontalAlignment(SwingConstants.LEFT);
-        button.setBorder(new EmptyBorder(10, 10, 10, 10));
-
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                button.setContentAreaFilled(true);
-                button.setBackground(PRIMARY_BLUE);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setContentAreaFilled(false);
-                button.setBackground(DARK_BLUE);
-            }
-        });
-
-        return button;
+    private void createMainContentPanel() {
+        mainContentPanel = new JPanel();
+        mainContentPanel.setLayout(new BorderLayout());
+        add(mainContentPanel, BorderLayout.CENTER);
     }
-
-    private JPanel createMainContentPanel(String title) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(LIGHT_GRAY);
-        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
+    
+    protected void showDashboard() {
+        mainContentPanel.removeAll();
+        mainContentPanel.setLayout(new BorderLayout());
 
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(BACKGROUND_WHITE);
         headerPanel.setBorder(new EmptyBorder(10, 15, 10, 15));
-        
-        JLabel lblHeaderTitle = new JLabel(title);
+        JLabel lblHeaderTitle = new JLabel(contentTitle);
         lblHeaderTitle.setFont(new Font("Arial", Font.BOLD, 20));
         headerPanel.add(lblHeaderTitle, BorderLayout.WEST);
-
-        JLabel lblUserIcon = new JLabel("👤");
-        lblUserIcon.setFont(new Font("Arial", Font.PLAIN, 24));
-        headerPanel.add(lblUserIcon, BorderLayout.EAST);
-        
-        panel.add(headerPanel, BorderLayout.NORTH);
+        mainContentPanel.add(headerPanel, BorderLayout.NORTH);
 
         JPanel contentPanel = new JPanel(new GridBagLayout());
         contentPanel.setBackground(BACKGROUND_WHITE);
-        contentPanel.add(new JLabel("Bem-vindo ao Painel do " + title));
+        contentPanel.add(new JLabel("Bem-vindo(a) ao " + windowTitle));
+        mainContentPanel.add(contentPanel, BorderLayout.CENTER);
 
-        panel.add(contentPanel, BorderLayout.CENTER);
+        mainContentPanel.revalidate();
+        mainContentPanel.repaint();
+    }
 
-        return panel;
+    protected List<JButton> getMenuButtons() {
+        return menuButtons;
     }
 }
