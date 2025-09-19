@@ -15,7 +15,7 @@
 ---
 
 ## Time de Desenvolvedores
-- José Danilo Araújo Leite
+- José Danilo
 
 ---
 
