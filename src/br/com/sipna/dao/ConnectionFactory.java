@@ -9,7 +9,7 @@ public class ConnectionFactory {
     // Configurações de conexão - ADAPTE COM AS SUAS CREDENCIAIS
     private static final String URL = "jdbc:mysql://localhost:3306/sipna_db";
     private static final String USER = "root";
-    private static final String PASSWORD = "EVC6M-3D92Y-RQKQX";
+    private static final String PASSWORD = "senha do usuário";
 
     public static Connection getConnection() {
         try {
